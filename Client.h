@@ -31,13 +31,11 @@ public:
 
     void setHost(const std::string &hostParam);
 
-    void setIndex(const std::string &index);
-
     void setCurrentQuery(std::string query);
 
-    CURLcode executeQuery(const std::string &requestMode);
+    CURLcode executeQuery(const std::string &index, const std::string &requestMode);
 
-    CURLcode executeQuery(QueryBuilder query, const std::string& requestMode);
+    CURLcode executeQuery(const std::string &index, QueryBuilder query, const std::string &requestMode);
 
     void setHeader(const std::string &headerOptions);
 

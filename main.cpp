@@ -1,7 +1,7 @@
 #include <iostream>
 #include <curl/curl.h>
 #include <string>
-#include <cstring>
+#include <sstream>
 
 #include "Client.h"
 #include "logger.h"
@@ -20,16 +20,18 @@ int main() {
     Client client{HOST, PORT};
     QueryBuilder builder{};
 
-    //TODO: Make this reversible
-    client.setIndex("/dokumente/_search");
-    std::string key = "url";
-    std::string value = "https://www.gailingen.de/index.php?id=308&publish%5Bid%5D=407680&publish%5Bstart%5D=";
+    //std::string key = "url";
+    //std::string value = "https://www.google.de";
 
-    //builder.match(key, value);
     client.setHeader("Content-Type: application/json");
-    res = client.executeQuery("GET");
+
+    // The first '/' is important!
+    res = client.executeQuery("/dokumente/_search", "GET");
+
     if (res != CURLE_OK) {
-        logger.error("Request failed!");
+        std::ostringstream errorMsg;
+        errorMsg << "Request failed with the following error code: " << (int) res;
+        logger.error(errorMsg.str());
         cleanUpEsClient();
     }
     client.cleanUp();

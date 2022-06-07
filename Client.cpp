@@ -25,7 +25,7 @@ void Client::setHost(const std::string &hostParam) {
 }
 
 std::string Client::getHost() {
-    return HOST;
+    return this->HOST;
 }
 
 int Client::getPort() const {
@@ -41,18 +41,16 @@ void Client::setHeader(const std::string &headerOptions) {
     this->header = curl_slist_append(this->header, headerOptions.c_str());
 }
 
-void Client::setIndex(const std::string &index) {
-    url.append(index);
-}
-
 void Client::resetHeader() {
     curl_slist_free_all(this->header);
     this->header = nullptr;
 }
 
-CURLcode Client::executeQuery(const std::string &requestMode) {
+CURLcode Client::executeQuery(const std::string &index, const std::string &requestMode) {
+    std::string requestUrl = this->url + index;
+    std::cout << requestUrl << std::endl;
     curl_easy_setopt(this->curl, CURLOPT_BUFFERSIZE, 102400L);
-    curl_easy_setopt(this->curl, CURLOPT_URL, this->url.c_str());
+    curl_easy_setopt(this->curl, CURLOPT_URL, requestUrl.c_str());
     curl_easy_setopt(this->curl, CURLOPT_POSTFIELDS, this->currentQuery.c_str());
     curl_easy_setopt(this->curl, CURLOPT_POSTFIELDSIZE_LARGE, strlen(this->currentQuery.c_str()));
     curl_easy_setopt(this->curl, CURLOPT_HTTPHEADER, this->header);
@@ -62,11 +60,11 @@ CURLcode Client::executeQuery(const std::string &requestMode) {
     return code;
 }
 
-CURLcode Client::executeQuery(QueryBuilder query, const std::string &requestMode) {
+CURLcode Client::executeQuery(const std::string &index, QueryBuilder query, const std::string &requestMode) {
     std::string temp = query.getCurrentQuery();
+    std::string requestUrl = this->url + index;
     curl_easy_setopt(this->curl, CURLOPT_BUFFERSIZE, 102400L);
-    std::cout << "Url: " << url << std::endl;
-    curl_easy_setopt(this->curl, CURLOPT_URL, this->url.c_str());
+    curl_easy_setopt(this->curl, CURLOPT_URL, requestUrl.c_str());
     curl_easy_setopt(this->curl, CURLOPT_POSTFIELDS, temp.c_str());
     curl_easy_setopt(this->curl, CURLOPT_POSTFIELDSIZE_LARGE, strlen(temp.c_str()));
     curl_easy_setopt(this->curl, CURLOPT_HTTPHEADER, this->header);
