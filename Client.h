@@ -10,6 +10,8 @@
 #include "logger.h"
 #include "utilities/queries.h"
 
+
+// TODO: Refactor object attributes, especially currentQuerry
 class Client {
 
 private:
@@ -33,9 +35,19 @@ public:
 
     void setCurrentQuery(std::string query);
 
+    CURLcode search(const std::string &index, const std::string &query);
+
+    CURLcode remove();
+
+    CURLcode index(const std::string &indexName, const std::string &query);
+
+    CURLcode update(const std::string &index, const std::string &query, const std::string &id);
+
     CURLcode executeQuery(const std::string &index, const std::string &requestMode);
 
     CURLcode executeQuery(const std::string &index, QueryBuilder query, const std::string &requestMode);
+
+    CURLcode executeQueryDirect(const std::string &requestMode, std::string query);
 
     void setHeader(const std::string &headerOptions);
 

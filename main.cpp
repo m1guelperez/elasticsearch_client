@@ -20,13 +20,17 @@ int main() {
     Client client{HOST, PORT};
     QueryBuilder builder{};
 
+
     //std::string key = "url";
     //std::string value = "https://www.google.de";
-
     client.setHeader("Content-Type: application/json");
 
+    client.search("/dokumente","");
+
     // The first '/' is important!
-    res = client.executeQuery("/dokumente/_search", "GET");
+    //res = client.executeQuery("/dokumente/_search","GET");
+
+    res = CURLE_OK;
 
     if (res != CURLE_OK) {
         std::ostringstream errorMsg;
