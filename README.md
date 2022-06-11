@@ -13,6 +13,7 @@ To get the best results note the following:
 ## Dependencies:
 
 * libcurl version >= 7.17.0
+* simdjson as `git submodule`
 
 TODO:
 
@@ -21,6 +22,7 @@ TODO:
 * [x] Create easy-query/raw-string interface
 * [ ] Add all elasticsearch request types (e.g search, update, ...)
 * [ ] Response processing (extract JSON values)
+  * [x] Add json parsing functionality
 * [ ] Make fully functional Querybuilder
     * [ ] Add all elasticsearch query parameters
 * [ ] Multithreading
