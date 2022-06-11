@@ -6,6 +6,6 @@
 
 #include <curl/curl.h>
 
-void initEs();
+void initEsClient();
 
 void cleanUpEsClient();

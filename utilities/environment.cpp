@@ -5,7 +5,7 @@
 #include "environment.h"
 #include <curl/curl.h>
 
-void initEs() {
+void initEsClient() {
     curl_global_init(CURL_GLOBAL_DEFAULT);
 }
 
