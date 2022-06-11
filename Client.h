@@ -9,23 +9,32 @@
 
 #include "logger.h"
 #include "utilities/queries.h"
+#include "simdjson.h"
 
 
-// TODO: Refactor object attributes, especially currentQuerry
 class Client {
 
 private:
     std::string HOST;
     int PORT;
     std::string url;
-    std::string currentQuery;
     CURL *curl;
     struct curl_slist *header;
+    std::string readBuffer;
+
+    CURLcode executeQuery(const std::string &requestMode, const std::string &query);
+
+    CURLcode executeQuery(const std::string &requestMode);
+
+    CURLcode executeQuery(const std::string &index, QueryBuilder query, const std::string &requestMode);
+
 
 public:
     Logger log{};
 
     explicit Client(const std::string &hostParam, int portParam);
+
+    std::string getReadBuffer();
 
     std::string getHost();
 
@@ -33,21 +42,24 @@ public:
 
     void setHost(const std::string &hostParam);
 
-    void setCurrentQuery(std::string query);
-
     CURLcode search(const std::string &index, const std::string &query);
 
-    CURLcode remove();
+    CURLcode search(const std::string &index);
+
+    CURLcode remove(const std::string &index);
 
     CURLcode index(const std::string &indexName, const std::string &query);
 
+    CURLcode index(const std::string &indexName);
+
     CURLcode update(const std::string &index, const std::string &query, const std::string &id);
 
-    CURLcode executeQuery(const std::string &index, const std::string &requestMode);
+    //TODO: Eventually put it into the index function
+    CURLcode insertDocument(const std::string &index, const std::string &body, const std::string &id);
 
-    CURLcode executeQuery(const std::string &index, QueryBuilder query, const std::string &requestMode);
+    CURLcode insertDocument(const std::string &index, const std::string &body);
 
-    CURLcode executeQueryDirect(const std::string &requestMode, std::string query);
+    CURLcode executeDirtyQuery(const std::string &requestMode, const std::string &index, const std::string &query);
 
     void setHeader(const std::string &headerOptions);
 
