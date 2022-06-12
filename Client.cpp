@@ -85,12 +85,12 @@ CURLcode Client::index(const std::string &indexName, const std::string &query) {
 CURLcode Client::insertDocument(const std::string &index, const std::string &body) {
     this->url.append(index + "/_doc");
     std::cout << this->url << std::endl;
-    executeQuery("POST", body);
+    return executeQuery("POST", body);
 }
 
 CURLcode Client::insertDocument(const std::string &index, const std::string &body, const std::string &id) {
     this->url.append(index + "/_doc/" + id);
-    executeQuery("POST", body);
+    return executeQuery("POST", body);
 }
 
 CURLcode Client::executeQuery(const std::string &requestMode, const std::string &query) {

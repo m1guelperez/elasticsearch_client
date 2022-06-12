@@ -8,6 +8,7 @@
 #include "simdjson/singleheader/simdjson.h"
 
 int main() {
+
     initEsClient();
     Logger logger{};
     logger.setLogLevel(logger.INFO);
@@ -39,6 +40,7 @@ int main() {
     } else {
         std::cout << "Request successfully!" << std::endl;
     }
+
     client.cleanUp();
     cleanUpEsClient();
     return 0;

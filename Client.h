@@ -41,7 +41,7 @@ public:
     int getPort() const;
 
     void setHost(const std::string &hostParam);
-
+    
     CURLcode search(const std::string &index, const std::string &query);
 
     CURLcode search(const std::string &index);
