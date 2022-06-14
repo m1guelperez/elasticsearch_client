@@ -3,9 +3,10 @@
 #include <string>
 
 #include "Client.h"
-#include "logger.h"
+#include "utilities/logger/logger.h"
 #include "utilities/environment.h"
 #include "simdjson/singleheader/simdjson.h"
+#include "utilities/validationHandler.h"
 
 int main() {
 
@@ -17,29 +18,36 @@ int main() {
     constexpr int PORT = 9200;
     CURLcode res{};
     Client client{HOST, PORT};
+    //client.setCurlVerbose();
 
     // The first '/' is important!
     //res = client.search("/miguels_test_index");
     //std::cout << "Print: " << client.getReadBuffer() << client.getReadBuffer().length() << std::endl;
 
     std::string document = "{\n"
-                           "  \"name\" : \"test2\",\n"
-                           "  \"height\": 1239\n"
+                           "  \"name\" : \"uff\",\n"
+                           "  \"height\": 0\n"
                            "}";
 
+    res = client.insertDocument("/miguels_test_index", document);
+    std::cout << "Response: " << client.getReadBuffer() << std::endl;
+    responseCheck(res);
 
-    res = client.insertDocument("/test_index", document);
-    std::cout << "Print: " << client.getReadBuffer() << std::endl;
+    std::string req = "{\n"
+                      "  \"query\": {\n"
+                      "    \"match\": {\n"
+                      "      \"name\": \"uff\"\n"
+                      "    }\n"
+                      "  }\n"
+                      "}";
 
-    if (res != CURLE_OK) {
-        std::cout << "Error: " << *curl_easy_strerror(res) << std::endl;
-        std::ostringstream errorMsg;
-        errorMsg << "Request failed with the following error code: " << (int) res;
-        logger.error(errorMsg.str());
-        cleanUpEsClient();
-    } else {
-        std::cout << "Request successfully!" << std::endl;
-    }
+    auto res3 = client.search("/miguels_test_index",req);
+    std::cout << "Response: " << client.getReadBuffer() << std::endl;
+    responseCheck(res3);
+
+    auto res2 = client.search("/miguels_test_index");
+    std::cout << "Response: " << client.getReadBuffer() << std::endl;
+    responseCheck(res2);
 
     client.cleanUp();
     cleanUpEsClient();

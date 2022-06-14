@@ -7,7 +7,7 @@
 #include <string>
 #include <curl/curl.h>
 
-#include "logger.h"
+#include "utilities/logger/logger.h"
 #include "utilities/queries.h"
 #include "simdjson.h"
 
@@ -17,9 +17,10 @@ class Client {
 private:
     std::string HOST;
     int PORT;
-    std::string url;
-    CURL *curl;
-    struct curl_slist *header;
+    std::string baseUrl;
+    std::string executionUrl;
+    CURL *curl{};
+    struct curl_slist *header{};
     std::string readBuffer;
 
     CURLcode executeQuery(const std::string &requestMode, const std::string &query);
@@ -28,6 +29,9 @@ private:
 
     CURLcode executeQuery(const std::string &index, QueryBuilder query, const std::string &requestMode);
 
+    void initCurlDefaults();
+
+    void resetReadBuffer();
 
 public:
     Logger log{};
@@ -41,10 +45,16 @@ public:
     int getPort() const;
 
     void setHost(const std::string &hostParam);
-    
+
     CURLcode search(const std::string &index, const std::string &query);
 
     CURLcode search(const std::string &index);
+
+    CURLcode count(const std::string& index);
+
+    CURLcode count(const std::string& index, const std::string& query);
+
+    CURLcode refresh(const std::string &index);
 
     CURLcode remove(const std::string &index);
 
@@ -60,6 +70,8 @@ public:
     CURLcode insertDocument(const std::string &index, const std::string &body);
 
     CURLcode executeDirtyQuery(const std::string &requestMode, const std::string &index, const std::string &query);
+
+    void setCurlVerbose();
 
     void setHeader(const std::string &headerOptions);
 
