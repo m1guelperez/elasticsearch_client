@@ -20,7 +20,6 @@ Client::Client(const std::string &hostParam, int portParam) {
     this->PORT = portParam;
     this->baseUrl = (HOST + ":" + std::to_string(PORT));
     this->executionUrl = baseUrl;
-    std::cout << executionUrl << std::endl;
     initCurlDefaults();
     log.setLogLevel(log.INFO);
 }
@@ -97,7 +96,6 @@ CURLcode Client::remove(const std::string &index) {
     this->executionUrl.append(index);
     return executeQuery("DELETE");
 }
-
 
 CURLcode Client::update(const std::string &index, const std::string &query, const std::string &id) {
     this->executionUrl.append(index + "/_update" + id);
