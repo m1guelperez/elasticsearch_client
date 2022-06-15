@@ -3,19 +3,26 @@
 #include <string>
 
 #include "Client.h"
-#include "utilities/logger/logger.h"
 #include "utilities/environment.h"
 #include "simdjson/singleheader/simdjson.h"
 #include "utilities/validationHandler.h"
+#include "utilities/configfileHandler.h"
 
+/**
+ * Only used for testing the library.
+ *
+ */
 int main() {
 
     initEsClient();
-    Logger logger{};
-    logger.setLogLevel(logger.INFO);
 
-    const std::string HOST = "http://localhost";
-    constexpr int PORT = 9200;
+    Configuration config;
+    config.loadConfigfile();
+
+    const std::string HOST = config.getHost();
+    const int PORT = config.getPort();
+
+
     CURLcode res{};
     Client client{HOST, PORT};
     //client.setCurlVerbose();
@@ -41,7 +48,7 @@ int main() {
                       "  }\n"
                       "}";
 
-    auto res3 = client.search("/miguels_test_index",req);
+    auto res3 = client.search("/miguels_test_index", req);
     std::cout << "Response: " << client.getReadBuffer() << std::endl;
     responseCheck(res3);
 

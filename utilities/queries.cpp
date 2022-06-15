@@ -6,7 +6,7 @@
 
 #include <string>
 
-QueryBuilder QueryBuilder::match(std::string key, std::string value) {
+QueryBuilder QueryBuilder::match(const std::string& key, const std::string& value) {
     this->currentQuery = "{\n"
                          "  \"query\": {\n"
                          "    \"match\": {\n"

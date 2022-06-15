@@ -6,6 +6,8 @@
 
 #include <curl/curl.h>
 
+//Init cURL
 void initEsClient();
 
+//Global cURL cleanup
 void cleanUpEsClient();

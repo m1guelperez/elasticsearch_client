@@ -11,7 +11,11 @@
 #include "utilities/queries.h"
 #include "simdjson.h"
 
-
+/**
+ * Client which will execute queries to elasticsearch
+ * @param hostParam elasticsearch host
+ * @param portParam elasticsearch port
+ */
 class Client {
 
 private:
@@ -23,6 +27,7 @@ private:
     struct curl_slist *header{};
     std::string readBuffer;
 
+    //Function overloading for different executions via cURL
     CURLcode executeQuery(const std::string &requestMode, const std::string &query);
 
     CURLcode executeQuery(const std::string &requestMode);
@@ -46,6 +51,7 @@ public:
 
     void setHost(const std::string &hostParam);
 
+    // Several queries
     CURLcode search(const std::string &index, const std::string &query);
 
     CURLcode search(const std::string &index);

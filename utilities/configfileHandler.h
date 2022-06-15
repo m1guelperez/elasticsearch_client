@@ -7,7 +7,9 @@
 
 #include <string>
 
-
+/**
+ * Loads a config from a textfile
+ */
 class Configuration {
 private:
     std::string Host{};

@@ -9,6 +9,7 @@
 #include <algorithm>
 
 //TODO: Is there a better path logic?
+//TODO: Delete whitespaces
 void Configuration::loadConfigfile() {
     std::ifstream file;
     file.open("../resources/configfile.txt");

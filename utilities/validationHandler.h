@@ -5,4 +5,5 @@
 #pragma once
 #include <curl/curl.h>
 
+//Check if the query to elasticsearch was successfully
 bool responseCheck(CURLcode res);
