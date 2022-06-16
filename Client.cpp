@@ -4,6 +4,7 @@
 
 #include "Client.h"
 #include "simdjson/singleheader/simdjson.h"
+#include "utilities/environment.h"
 
 #include <string>
 #include <curl/curl.h>
@@ -24,6 +25,10 @@ Client::Client(const std::string &hostParam, int portParam) {
     log.setLogLevel(log.INFO);
 }
 
+Client::~Client() {
+    this->cleanUp();
+}
+
 //TODO: Reset set variables (POSTFIELDS etc.)
 void Client::initCurlDefaults() {
     this->curl = curl_easy_init();
@@ -31,25 +36,131 @@ void Client::initCurlDefaults() {
     this->header = curl_slist_append(this->header, "Content-Type: application/json");
     curl_easy_setopt(this->curl, CURLOPT_BUFFERSIZE, 102400L);
     curl_easy_setopt(this->curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-    curl_easy_setopt(this->curl, CURLOPT_WRITEDATA, &readBuffer);
+    curl_easy_setopt(this->curl, CURLOPT_WRITEDATA, &this->readBuffer);
     curl_easy_setopt(this->curl, CURLOPT_HTTPHEADER, this->header);
     curl_easy_setopt(this->curl, CURLOPT_VERBOSE, 0L);
 }
 
-void Client::resetReadBuffer() {
-    this->readBuffer = "";
+CURLcode Client::elasticUnderscoreApi(const std::string &index, const std::string &api, const std::string &query,
+                                      const std::string &requestMode) {
+    this->executionUrl.append(index + "/" + api);
+    return executeQuery(requestMode, query);
 }
 
-void Client::setHost(const std::string &hostParam) {
-    this->HOST = hostParam;
+CURLcode Client::elasticUnderscoreApi(const std::string &index, const std::string &api, const std::string &query,
+                                      const std::string &id,
+                                      const std::string &requestMode) {
+    this->executionUrl.append(index + "/" + api + "/" + id);
+    return executeQuery(requestMode, query);
 }
 
-//TODO: Maybe make all getter functions const?
-std::string Client::getReadBuffer() {
-    return this->readBuffer;
+CURLcode Client::elasticUnderscoreApi(const std::string &index, const std::string &api) {
+    this->executionUrl.append(index + "/" + api);
+    return executeQuery("GET");
 }
 
-std::string Client::getHost() {
+CURLcode Client::elasticSingleRequest(const std::string &index, const std::string &requestMode) {
+    this->executionUrl.append(index);
+    return executeQuery(requestMode);
+}
+
+CURLcode
+Client::elasticSingleRequest(const std::string &index, const std::string &query, const std::string &requestMode) {
+    this->executionUrl.append(index);
+    return executeQuery(requestMode, query);
+}
+
+CURLcode Client::search(const std::string &index, const std::string &query) {
+    return this->elasticUnderscoreApi(index, "_search", query, "POST");
+}
+
+CURLcode Client::search(const std::string &index) {
+    return this->elasticUnderscoreApi(index, "_search");
+}
+
+CURLcode Client::count(const std::string &index) {
+    return this->elasticUnderscoreApi(index, "_count");
+}
+
+CURLcode Client::count(const std::string &index, const std::string &query) {
+    return this->elasticUnderscoreApi(index, "_search", query, "POST");
+}
+
+CURLcode Client::refresh(const std::string &index) {
+    return this->elasticUnderscoreApi(index, "_refresh");
+}
+
+CURLcode Client::remove(const std::string &index) {
+    return this->elasticSingleRequest(index, "DELETE");
+}
+
+CURLcode Client::update(const std::string &index, const std::string &query, const std::string &id) {
+    this->elasticUnderscoreApi(index, "_update", query, id, "POST");
+}
+
+CURLcode Client::index(const std::string &indexName) {
+    return elasticSingleRequest(indexName, "PUT");
+}
+
+CURLcode Client::index(const std::string &indexName, const std::string &query) {
+    return this->elasticSingleRequest(indexName, query, "PUT");
+}
+
+CURLcode Client::insertDocument(const std::string &index, const std::string &query) {
+    return this->elasticUnderscoreApi(index, "_doc", query, "POST");
+}
+
+CURLcode Client::insertDocument(const std::string &index, const std::string &query, const std::string &id) {
+    return this->elasticUnderscoreApi(index, "_doc", query, id, "POST");
+}
+
+CURLcode Client::executeQuery(const std::string &requestMode, const std::string &query) {
+    resetReadBuffer();
+    setCurlParams(requestMode, query);
+    CURLcode code = curl_easy_perform(this->curl);
+    this->executionUrl = this->baseUrl;
+    return code;
+}
+
+CURLcode Client::executeDirtyQuery(const std::string &requestMode, const std::string &index, const std::string &query) {
+    resetReadBuffer();
+    setCurlParams(requestMode, query);
+    CURLcode code = curl_easy_perform(this->curl);
+    this->executionUrl = this->baseUrl;
+    return code;
+}
+
+CURLcode Client::executeQuery(const std::string &requestMode) {
+    resetReadBuffer();
+    std::string requestUrl = this->executionUrl;
+    setCurlParamsWithoutPostBody(requestMode);
+    CURLcode code = curl_easy_perform(this->curl);
+    this->executionUrl = this->baseUrl;
+    return code;
+}
+
+// Will be used for when the QueryBuilder is ready
+CURLcode Client::executeQuery(const std::string &index, QueryBuilder query, const std::string &requestMode) {
+    resetReadBuffer();
+    std::string temp = query.getCurrentQuery();
+    std::string requestUrl = this->executionUrl + index;
+    curl_easy_setopt(this->curl, CURLOPT_URL, this->executionUrl.c_str());
+    curl_easy_setopt(this->curl, CURLOPT_POSTFIELDS, temp.c_str());
+    curl_easy_setopt(this->curl, CURLOPT_POSTFIELDSIZE_LARGE, strlen(temp.c_str()));
+    curl_easy_setopt(this->curl, CURLOPT_CUSTOMREQUEST, requestMode.c_str());
+    CURLcode code = curl_easy_perform(this->curl);
+    this->executionUrl = this->baseUrl;
+    return code;
+}
+
+void Client::cleanUp() {
+    curl_easy_cleanup(this->curl);
+    if (this->header != nullptr) {
+        curl_slist_free_all(this->header);
+    }
+}
+
+std::string Client::getHost() const {
     return this->HOST;
 }
 
@@ -62,138 +173,40 @@ void Client::setHeader(const std::string &headerOptions) {
     this->header = curl_slist_append(this->header, headerOptions.c_str());
 }
 
+void Client::setHost(const std::string &hostParam) {
+    this->HOST = hostParam;
+}
+
+void Client::setCurlVerbose(long param) {
+    curl_easy_setopt(this->curl, CURLOPT_VERBOSE, param);
+}
+
+//TODO: Maybe make all getter functions const?
+std::string Client::getReadBuffer() const {
+    return this->readBuffer;
+}
+
 void Client::resetHeader() {
     curl_slist_free_all(this->header);
     this->header = nullptr;
 }
 
-CURLcode Client::search(const std::string &index, const std::string &query) {
-    this->executionUrl.append(index + "/_search");
-    return executeQuery("GET", query);
+void Client::resetReadBuffer() {
+    this->readBuffer = "";
 }
 
-CURLcode Client::search(const std::string &index) {
-    this->executionUrl.append(index + "/_search");
-    return executeQuery("GET");
-}
-
-CURLcode Client::count(const std::string &index) {
-    this->executionUrl.append(index + "/_count");
-    return executeQuery("GET");
-}
-
-CURLcode Client::count(const std::string &index, const std::string& query) {
-    this->executionUrl.append(index + "/_count");
-    return executeQuery("GET", query);
-}
-
-CURLcode Client::refresh(const std::string &index) {
-    this->executionUrl.append(index);
-    return executeQuery("GET");
-}
-
-CURLcode Client::remove(const std::string &index) {
-    this->executionUrl.append(index);
-    return executeQuery("DELETE");
-}
-
-CURLcode Client::update(const std::string &index, const std::string &query, const std::string &id) {
-    this->executionUrl.append(index + "/_update" + id);
-    return executeQuery("POST", query);
-}
-
-CURLcode Client::index(const std::string &indexName) {
-    this->executionUrl.append(indexName);
-    return executeQuery("PUT");
-}
-
-CURLcode Client::index(const std::string &indexName, const std::string &query) {
-    this->executionUrl.append(indexName);
-    return executeQuery("PUT", query);
-}
-
-CURLcode Client::insertDocument(const std::string &index, const std::string &body) {
-    this->executionUrl.append(index + "/_doc");
-    return executeQuery("POST", body);
-}
-
-CURLcode Client::insertDocument(const std::string &index, const std::string &body, const std::string &id) {
-    this->executionUrl.append(index + "/_doc/" + id);
-    return executeQuery("POST", body);
-}
-
-void Client::setCurlVerbose() {
-    curl_easy_setopt(this->curl, CURLOPT_VERBOSE, 1L);
-}
-
-CURLcode Client::executeQuery(const std::string &requestMode, const std::string &query) {
-    resetReadBuffer();
-    curl_easy_setopt(this->curl, CURLOPT_BUFFERSIZE, 102400L);
+//Used for every request which uses a body/POSTFIELDS.
+void Client::setCurlParams(const std::string &requestMode, const std::string &query) {
     curl_easy_setopt(this->curl, CURLOPT_URL, this->executionUrl.c_str());
-    curl_easy_setopt(this->curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-    curl_easy_setopt(this->curl, CURLOPT_WRITEDATA, &readBuffer);
     curl_easy_setopt(this->curl, CURLOPT_POSTFIELDS, query.c_str());
     curl_easy_setopt(this->curl, CURLOPT_POSTFIELDSIZE_LARGE, strlen(query.c_str()));
-    curl_easy_setopt(this->curl, CURLOPT_HTTPHEADER, this->header);
     curl_easy_setopt(this->curl, CURLOPT_CUSTOMREQUEST, requestMode.c_str());
-    CURLcode code = curl_easy_perform(this->curl);
-    this->executionUrl = this->baseUrl;
-    return code;
 }
 
-CURLcode Client::executeDirtyQuery(const std::string &requestMode, const std::string &index, const std::string &query) {
-    resetReadBuffer();
-    this->executionUrl.append(index);
-    curl_easy_setopt(this->curl, CURLOPT_BUFFERSIZE, 102400L);
-    curl_easy_setopt(this->curl, CURLOPT_URL, this->executionUrl.c_str());
-    curl_easy_setopt(this->curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-    curl_easy_setopt(this->curl, CURLOPT_WRITEDATA, &readBuffer);
-    curl_easy_setopt(this->curl, CURLOPT_POSTFIELDS, query.c_str());
-    curl_easy_setopt(this->curl, CURLOPT_POSTFIELDSIZE_LARGE, strlen(query.c_str()));
-    curl_easy_setopt(this->curl, CURLOPT_HTTPHEADER, this->header);
-    curl_easy_setopt(this->curl, CURLOPT_CUSTOMREQUEST, requestMode.c_str());
-    CURLcode code = curl_easy_perform(this->curl);
-    this->executionUrl = this->baseUrl;
-    return code;
-}
-
-CURLcode Client::executeQuery(const std::string &requestMode) {
-    resetReadBuffer();
-    std::string requestUrl = this->executionUrl;
+//Only used for requests which do not have a body.
+void Client::setCurlParamsWithoutPostBody(const std::string &requestMode) {
     //Fields like POSTFIELDSIZE etc., have to be unset when sending a GET, which does not have any POSTFIELDS otherwise this will be reused.
     curl_easy_setopt(this->curl, CURLOPT_HTTPGET, true);
-    curl_easy_setopt(this->curl, CURLOPT_BUFFERSIZE, 102400L);
-    curl_easy_setopt(this->curl, CURLOPT_URL, requestUrl.c_str());
-    curl_easy_setopt(this->curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-    curl_easy_setopt(this->curl, CURLOPT_WRITEDATA, &readBuffer);
-    curl_easy_setopt(this->curl, CURLOPT_HTTPHEADER, this->header);
-    curl_easy_setopt(this->curl, CURLOPT_CUSTOMREQUEST, requestMode.c_str());
-    CURLcode code = curl_easy_perform(this->curl);
-    this->executionUrl = this->baseUrl;
-    return code;
-}
-
-// Will be used for when the QueryBuilder is ready
-CURLcode Client::executeQuery(const std::string &index, QueryBuilder query, const std::string &requestMode) {
-    resetReadBuffer();
-    std::string temp = query.getCurrentQuery();
-    std::string requestUrl = this->executionUrl + index;
-    curl_easy_setopt(this->curl, CURLOPT_BUFFERSIZE, 102400L);
-    curl_easy_setopt(this->curl, CURLOPT_URL, requestUrl.c_str());
-    curl_easy_setopt(this->curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-    curl_easy_setopt(this->curl, CURLOPT_WRITEDATA, &readBuffer);
-    curl_easy_setopt(this->curl, CURLOPT_POSTFIELDS, temp.c_str());
-    curl_easy_setopt(this->curl, CURLOPT_POSTFIELDSIZE_LARGE, strlen(temp.c_str()));
-    curl_easy_setopt(this->curl, CURLOPT_HTTPHEADER, this->header);
-    curl_easy_setopt(this->curl, CURLOPT_CUSTOMREQUEST, requestMode.c_str());
-    CURLcode code = curl_easy_perform(this->curl);
-    this->executionUrl = this->baseUrl;
-    return code;
-}
-
-void Client::cleanUp() {
-    curl_easy_cleanup(this->curl);
-    if (this->header != nullptr) {
-        curl_slist_free_all(this->header);
-    }
+    curl_easy_setopt(this->curl, CURLOPT_URL, this->executionUrl.c_str());
+    curl_easy_setopt(this->curl, CURLOPT_CUSTOMREQUEST, "GET");
 }

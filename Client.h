@@ -8,7 +8,7 @@
 #include <curl/curl.h>
 
 #include "utilities/logger/logger.h"
-#include "utilities/queries.h"
+#include "utilities/querybuilder/queries.h"
 #include "simdjson.h"
 
 /**
@@ -27,6 +27,10 @@ private:
     struct curl_slist *header{};
     std::string readBuffer;
 
+    void setCurlParams(const std::string &requestMode, const std::string &query);
+
+    void setCurlParamsWithoutPostBody(const std::string &requestMode);
+
     //Function overloading for different executions via cURL
     CURLcode executeQuery(const std::string &requestMode, const std::string &query);
 
@@ -43,22 +47,38 @@ public:
 
     explicit Client(const std::string &hostParam, int portParam);
 
-    std::string getReadBuffer();
+    ~Client();
 
-    std::string getHost();
+    std::string getReadBuffer() const;
+
+    std::string getHost() const;
 
     int getPort() const;
 
     void setHost(const std::string &hostParam);
 
     // Several queries
+
+    CURLcode elasticUnderscoreApi(const std::string &index, const std::string &api, const std::string &query,
+                                  const std::string &requestMode);
+
+    CURLcode elasticUnderscoreApi(const std::string &index, const std::string &api);
+
+    CURLcode elasticUnderscoreApi(const std::string &index, const std::string &api, const std::string &query,
+                                  const std::string &documentID,
+                                  const std::string &requestMode);
+
+    CURLcode elasticSingleRequest(const std::string &index, const std::string& query, const std::string &requestMode);
+
+    CURLcode elasticSingleRequest(const std::string &index, const std::string &requestMode);
+
     CURLcode search(const std::string &index, const std::string &query);
 
     CURLcode search(const std::string &index);
 
-    CURLcode count(const std::string& index);
+    CURLcode count(const std::string &index);
 
-    CURLcode count(const std::string& index, const std::string& query);
+    CURLcode count(const std::string &index, const std::string &query);
 
     CURLcode refresh(const std::string &index);
 
@@ -73,11 +93,12 @@ public:
     //TODO: Eventually put it into the index function
     CURLcode insertDocument(const std::string &index, const std::string &body, const std::string &id);
 
-    CURLcode insertDocument(const std::string &index, const std::string &body);
+    CURLcode insertDocument(const std::string &index, const std::string &query);
 
     CURLcode executeDirtyQuery(const std::string &requestMode, const std::string &index, const std::string &query);
 
-    void setCurlVerbose();
+    //1L will activate verbose output and 0L will deactivate it.
+    void setCurlVerbose(long param);
 
     void setHeader(const std::string &headerOptions);
 
