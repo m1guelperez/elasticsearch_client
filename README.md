@@ -50,6 +50,7 @@ To get the best results note the following:
     * [x] Add json parsing functionality
 * [ ] Make fully functional Querybuilder
     * [ ] Add all elasticsearch query parameters
+*[ ] Rewrite logging
 * [ ] Multithreading
 
 ### License:
