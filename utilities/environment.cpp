@@ -5,10 +5,10 @@
 #include "environment.h"
 #include <curl/curl.h>
 
-void initEsClient() {
+void utils::initEsClient() {
     curl_global_init(CURL_GLOBAL_DEFAULT);
 }
 
-void cleanUpEsClient() {
+void utils::cleanUpEsClient() {
     curl_global_cleanup();
 }

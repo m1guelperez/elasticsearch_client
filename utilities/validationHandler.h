@@ -3,7 +3,10 @@
 //
 
 #pragma once
+
 #include <curl/curl.h>
 
+namespace utils {
 //Check if the query to elasticsearch was successfully
-bool responseCheck(CURLcode res);
+    bool responseCheck(CURLcode res);
+}

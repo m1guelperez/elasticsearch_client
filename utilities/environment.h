@@ -5,9 +5,10 @@
 #pragma once
 
 #include <curl/curl.h>
-
+namespace utils {
 //Init cURL
-void initEsClient();
+    void initEsClient();
 
 //Global cURL cleanup
-void cleanUpEsClient();
+    void cleanUpEsClient();
+}
