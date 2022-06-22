@@ -68,7 +68,7 @@ public:
                                   const std::string &documentID,
                                   const std::string &requestMode);
 
-    CURLcode elasticSingleRequest(const std::string &index, const std::string& query, const std::string &requestMode);
+    CURLcode elasticSingleRequest(const std::string &index, const std::string &query, const std::string &requestMode);
 
     CURLcode elasticSingleRequest(const std::string &index, const std::string &requestMode);
 

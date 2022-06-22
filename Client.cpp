@@ -4,12 +4,10 @@
 
 #include "Client.h"
 #include "simdjson/singleheader/simdjson.h"
-#include "utilities/environment.h"
 
 #include <string>
 #include <curl/curl.h>
 #include <cstring>
-#include <iostream>
 
 static size_t WriteCallback(void *receivedContents, size_t size, size_t nmemb, void *buffer) {
     ((std::string *) buffer)->append((char *) receivedContents, size * nmemb);
