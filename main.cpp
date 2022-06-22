@@ -14,7 +14,7 @@
  */
 int main() {
 
-    initEsClient();
+    utils::initEsClient();
 
     Configuration config;
     config.loadConfigfile();
@@ -25,38 +25,17 @@ int main() {
 
     CURLcode res{};
     Client client{HOST, PORT};
-    //client.setCurlVerbose();
+    client.setCurlVerbose(1L);
 
     // The first '/' is important!
     //res = client.search("/miguels_test_index");
     //std::cout << "Print: " << client.getReadBuffer() << client.getReadBuffer().length() << std::endl;
 
-    std::string document = "{\n"
-                           "  \"name\" : \"uff\",\n"
-                           "  \"height\": 0\n"
-                           "}";
 
-    res = client.insertDocument("/miguels_test_index", document);
-    std::cout << "Response: " << client.getReadBuffer() << std::endl;
-    responseCheck(res);
-
-    std::string req = "{\n"
-                      "  \"query\": {\n"
-                      "    \"match\": {\n"
-                      "      \"name\": \"uff\"\n"
-                      "    }\n"
-                      "  }\n"
-                      "}";
-
-    auto res3 = client.search("/miguels_test_index", req);
-    std::cout << "Response: " << client.getReadBuffer() << std::endl;
-    responseCheck(res3);
 
     auto res2 = client.search("/miguels_test_index");
     std::cout << "Response: " << client.getReadBuffer() << std::endl;
-    responseCheck(res2);
-
-    client.cleanUp();
-    cleanUpEsClient();
+    utils::responseCheck(res2);
+    utils::cleanUpEsClient();
     return 0;
 }
