@@ -48,6 +48,7 @@ To get the best results note the following:
 * [ ] Add all elasticsearch request types (e.g search, update, ...)
 * [ ] Response processing (extract JSON values)
     * [x] Add json parsing functionality
+    * [ ] Add pretty print
 * [ ] Make fully functional Querybuilder
     * [ ] Add all elasticsearch query parameters
 * [ ] Rewrite logging
