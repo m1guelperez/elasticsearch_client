@@ -95,10 +95,10 @@ public:
 
     CURLcode insertDocument(const std::string &index, const std::string &query);
 
-    CURLcode executeDirtyQuery(const std::string &requestMode, const std::string &index, const std::string &query);
+    CURLcode stringQuery(const std::string &requestMode, const std::string &index, const std::string &query);
 
     //1L will activate verbose output and 0L will deactivate it.
-    void setCurlVerbose(long param);
+    void verboseLogging(long param);
 
     void setHeader(const std::string &headerOptions);
 

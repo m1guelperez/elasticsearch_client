@@ -93,7 +93,7 @@ CURLcode Client::remove(const std::string &index) {
 }
 
 CURLcode Client::update(const std::string &index, const std::string &query, const std::string &id) {
-    this->elasticUnderscoreApi(index, "_update", query, id, "POST");
+    return this->elasticUnderscoreApi(index, "_update", query, id, "POST");
 }
 
 CURLcode Client::index(const std::string &indexName) {
@@ -120,7 +120,7 @@ CURLcode Client::executeQuery(const std::string &requestMode, const std::string 
     return code;
 }
 
-CURLcode Client::executeDirtyQuery(const std::string &requestMode, const std::string &index, const std::string &query) {
+CURLcode Client::stringQuery(const std::string &requestMode, const std::string &index, const std::string &query) {
     resetReadBuffer();
     setCurlParams(requestMode, query);
     CURLcode code = curl_easy_perform(this->curl);
@@ -140,7 +140,7 @@ CURLcode Client::executeQuery(const std::string &requestMode) {
 // Will be used for when the QueryBuilder is ready
 CURLcode Client::executeQuery(const std::string &index, QueryBuilder query, const std::string &requestMode) {
     resetReadBuffer();
-    std::string temp = query.getCurrentQuery();
+    std::string temp = query.getQuery();
     std::string requestUrl = this->executionUrl + index;
     curl_easy_setopt(this->curl, CURLOPT_URL, this->executionUrl.c_str());
     curl_easy_setopt(this->curl, CURLOPT_POSTFIELDS, temp.c_str());
@@ -175,7 +175,7 @@ void Client::setHost(const std::string &hostParam) {
     this->HOST = hostParam;
 }
 
-void Client::setCurlVerbose(long param) {
+void Client::verboseLogging(long param) {
     curl_easy_setopt(this->curl, CURLOPT_VERBOSE, param);
 }
 
