@@ -19,6 +19,23 @@ std::unique_ptr<Query> QueryBuilder::wildcard(const std::string &field, const st
     return query;
 }
 
+//TODO: Continue finishing bool queries
+std::unique_ptr<BoolQuery> QueryBuilder::bools(const std::string &field, const std::string &value) {
+    std::unique_ptr<BoolQuery> query(new BoolQuery);
+    std::string boolQuery = "\"bool\": {\n ";
+    query->currentQuery = currentQuery.append(boolQuery);
+    query->incrementQueryDepth(1);
+    return query;
+}
+
+void BoolQuery::must() {}
+
+void BoolQuery::mustNot() {}
+
+void BoolQuery::minimumShouldMatch() {}
+
+void BoolQuery::should() {}
+
 std::string QueryBuilder::getQuery() {
     return currentQuery;
 }
@@ -37,15 +54,4 @@ std::string QueryBuilder::build() {
         this->currentQuery.append("\n}");
     }
     return this->currentQuery;
-}
-
-//TODO: Continue finishing bool queries
-Query Query::boolQuery() {
-    if (this->queryDepth > 2) {
-        this->currentQuery.append(", \n \" bool\": {\n");
-    } else {
-        this->currentQuery.append("\n \" bool\": {\n");
-
-    }
-    return *this;
 }
