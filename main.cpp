@@ -5,7 +5,7 @@
 #include "Client.h"
 #include "utilities/environment.h"
 #include "simdjson/singleheader/simdjson.h"
-#include "utilities/validationHandler.h"
+#include "utilities/utilFunctions.h"
 #include "utilities/configfileHandler.h"
 
 /**
@@ -25,7 +25,7 @@ int main() {
 
     CURLcode res{};
     Client client{HOST, PORT};
-    client.setCurlVerbose(1L);
+    client.verboseLogging(1L);
 
     // The first '/' is important!
     //res = client.search("/miguels_test_index");

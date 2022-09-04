@@ -48,11 +48,10 @@ To get the best results note the following:
 * [ ] Add all elasticsearch request types (e.g search, update, ...)
 * [ ] Response processing (extract JSON values)
     * [x] Add json parsing functionality
-    * [ ] Add pretty print
+    * [ ] Add pretty print for queries
 * [ ] Make fully functional Querybuilder
     * [ ] Add all elasticsearch query parameters
 * [ ] Rewrite logging
-* [ ] Multithreading
 
 ### License:
 
