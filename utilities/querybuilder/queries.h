@@ -6,16 +6,19 @@
 
 #include <string>
 #include <memory>
-
-class QueryBuilder;
+#include <vector>
 
 class Query;
 
-class BoolQuery;
+class QueryBuilder;
+
+class BoolQueryType;
+
+class BoolQueryParams;
+
 /**
  * This will be the Querybuilder similar to the Python elasticsearch_dsl package
  */
-
 //Base class
 class QueryBuilder {
 private:
@@ -24,36 +27,39 @@ private:
 
     friend class Query;
 
-    friend class BoolQuery;
+    friend class BoolQueryParams;
+
+    friend class BoolQueryType;
 
 public:
     std::unique_ptr<Query> wildcard(const std::string &field, const std::string &value);
-
-    std::unique_ptr<BoolQuery> bools(const std::string &field, const std::string &value);
 
     std::string getQuery();
 
     void incrementQueryDepth(int inc);
 
-    int getQueryDepth() const;
-
     std::string build();
 };
 
-// First inheritance
-class Query : public QueryBuilder {
-
+class BoolQueryParams {
 private:
+    QueryBuilder base;
 public:
+    std::vector<std::string> tempParams;
+    BoolQueryType exists(std::string fieldName);
+
+    BoolQueryType term(std::string term);
+
+    BoolQueryType range(std::string upperBound, std::string lowerBound, std::string pattern);
 };
 
-class BoolQuery : public QueryBuilder {
+class BoolQueryType : public BoolQueryParams {
+private:
+    QueryBuilder base;
 public:
-    void mustNot();
+    QueryBuilder mustNot();
 
-    void must();
+    QueryBuilder must();
 
-    void should();
-
-    void minimumShouldMatch();
+    QueryBuilder should(int minimumMatches);
 };
