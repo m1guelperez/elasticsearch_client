@@ -2,11 +2,12 @@
 // Created by miguel on 6/11/22.
 //
 
-#include "validationHandler.h"
+#include "utilFunctions.h"
 
 #include <curl/curl.h>
 #include <iostream>
 #include <sstream>
+#include<algorithm>
 
 #include "logger/logger.h"
 
@@ -23,4 +24,9 @@ bool utils::responseCheck(CURLcode res) {
         std::cout << "Request successfully!" << std::endl;
         return true;
     }
+}
+
+static std::string utils::trim(std::string pattern) {
+    pattern.erase(remove(pattern.begin(), pattern.end(), ' '), pattern.end());
+    return pattern;
 }
