@@ -111,6 +111,8 @@ CURLcode Client::insertDocument(const std::string &index, const std::string &que
 CURLcode Client::insertDocument(const std::string &index, const std::string &query, const std::string &id) {
     return this->elasticUnderscoreApi(index, "_doc", query, id, "POST");
 }
+//TODO: Implement
+CURLcode  bulk(const std::string){}
 
 CURLcode Client::executeQuery(const std::string &requestMode, const std::string &query) {
     resetReadBuffer();

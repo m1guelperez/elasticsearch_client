@@ -82,6 +82,8 @@ public:
 
     CURLcode refresh(const std::string &index);
 
+    CURLcode bulk(const std::string);
+
     CURLcode remove(const std::string &index);
 
     CURLcode index(const std::string &indexName, const std::string &query);
