@@ -7,7 +7,8 @@
 #include <curl/curl.h>
 #include <iostream>
 #include <sstream>
-#include<algorithm>
+#include <algorithm>
+#include <vector>
 
 #include "logger/logger.h"
 
@@ -29,4 +30,11 @@ bool utils::responseCheck(CURLcode res) {
 static std::string utils::trim(std::string pattern) {
     pattern.erase(remove(pattern.begin(), pattern.end(), ' '), pattern.end());
     return pattern;
+}
+
+std::string utils::buildParametersIntoQuery(std::string fieldName, std::vector<std::string> tempParams) {
+    std::string parametersEmbedded;
+    for (int i = 0; i < tempParams.size(); ++i) {
+        parametersEmbedded.append(R"({"exists": {"field": ")" + tempParams[i] + "\"}},");
+    }
 }

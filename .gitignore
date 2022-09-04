@@ -5,3 +5,4 @@ cmake-build-debug
 build/
 .cache/
 resources/configfile.txt
+main.cpp
