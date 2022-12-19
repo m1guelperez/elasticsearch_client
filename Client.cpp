@@ -8,6 +8,7 @@
 #include <string>
 #include <curl/curl.h>
 #include <cstring>
+#include <iostream>
 
 static size_t WriteCallback(void *receivedContents, size_t size, size_t nmemb, void *buffer) {
     ((std::string *) buffer)->append((char *) receivedContents, size * nmemb);
@@ -17,7 +18,7 @@ static size_t WriteCallback(void *receivedContents, size_t size, size_t nmemb, v
 Client::Client(const std::string &hostParam, int portParam) {
     this->HOST = hostParam;
     this->PORT = portParam;
-    this->baseUrl = (HOST + ":" + std::to_string(PORT));
+    this->baseUrl = (HOST + ":" + std::to_string(PORT) + "/");
     this->executionUrl = baseUrl;
     initCurlDefaults();
     log.setLogLevel(log.INFO);
@@ -69,7 +70,7 @@ Client::elasticSingleRequest(const std::string &index, const std::string &query,
 }
 
 CURLcode Client::search(const std::string &index, const std::string &query) {
-    return this->elasticUnderscoreApi(index, "_search", query, "POST");
+    return this->elasticUnderscoreApi(index, "_search", query, "GET");
 }
 
 CURLcode Client::search(const std::string &index) {
@@ -112,7 +113,7 @@ CURLcode Client::insertDocument(const std::string &index, const std::string &que
     return this->elasticUnderscoreApi(index, "_doc", query, id, "POST");
 }
 //TODO: Implement
-CURLcode  bulk(const std::string){}
+CURLcode bulk(const std::string) {}
 
 CURLcode Client::executeQuery(const std::string &requestMode, const std::string &query) {
     resetReadBuffer();
@@ -208,5 +209,5 @@ void Client::setCurlParamsWithoutPostBody(const std::string &requestMode) {
     //Fields like POSTFIELDSIZE etc., have to be unset when sending a GET, which does not have any POSTFIELDS otherwise this will be reused.
     curl_easy_setopt(this->curl, CURLOPT_HTTPGET, true);
     curl_easy_setopt(this->curl, CURLOPT_URL, this->executionUrl.c_str());
-    curl_easy_setopt(this->curl, CURLOPT_CUSTOMREQUEST, "GET");
+    curl_easy_setopt(this->curl, CURLOPT_CUSTOMREQUEST, requestMode.c_str());
 }
