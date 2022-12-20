@@ -17,7 +17,8 @@ To get the best results note the following:
 ## Dependencies:
 
 * libcurl version >= 7.17.0
-* simdjson as `git submodule`
+* simdjson 
+* nlohmann/json
 
 ## How to use:
 
@@ -39,6 +40,35 @@ To get the best results note the following:
       PORT=<PORT>
       ``` 
 
+## Recommendations:
+Depending on your usage, I highly recommend you to eventually install the `nlohmann` library
+for pretty printing/debugging and the `simdjson` library for faster parsing.
+
+### Installation of nlohmann json library via cmake:
+
+```cmake 
+include(FetchContent) 
+FetchContent_Declare(json 
+        URL https://github.com/nlohmann/json/releases/download/v3.11.2/json.tar.xz 
+        DOWNLOAD_EXTRACT_TIMESTAMP TRUE)
+FetchContent_MakeAvailable(json)  
+target_link_libraries(<your_target> PRIVATE nlohmann_json::nlohmann_json)
+```
+
+
+
+### Installation of simdjson library via cmake:
+  ```cmake 
+include(FetchContent)
+FetchContent_Declare(
+        simdjson
+        GIT_REPOSITORY https://github.com/simdjson/simdjson.git
+        GIT_SHALLOW TRUE 
+        DOWNLOAD_EXTRACT_TIMESTAMP TRUE)
+FetchContent_MakeAvailable(simdjson)
+target_link_libraries(<your_target> PRIVATE simdjson)
+
+  ```
 ## TODO:
 
 * [x] Set up default curl
@@ -48,7 +78,7 @@ To get the best results note the following:
 * [ ] Add all elasticsearch request types (e.g search, update, ...)
 * [ ] Response processing (extract JSON values)
     * [x] Add json parsing functionality
-    * [ ] Add pretty print for queries
+    * [x] Add pretty print for queries
 * [ ] Make fully functional Querybuilder
     * [ ] Add all elasticsearch query parameters
 * [ ] Rewrite logging
