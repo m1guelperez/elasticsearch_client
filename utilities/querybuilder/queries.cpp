@@ -19,33 +19,39 @@ QueryBuilder BoolQueryType::must() {
     this->base.currentQuery.append("\"bool\": {\n"
                                    "      \"must\": [\n"
                                    "        {\n");
-    utils::buildParametersIntoQuery(this->tempParams);
-    this->base.currentQuery.append("}\n"
+    this->base.tempString.append("}\n"
                                    "      ]");
+    return this->base;
 }
+
+
 
 QueryBuilder BoolQueryType::mustNot() {
     this->base.currentQuery.append("\"bool\": {\n"
                                    "      \"must_not\": [\n"
                                    "        {\n");
-    utils::buildParametersIntoQuery(this->tempParams);
     this->base.currentQuery.append("}\n"
                                    "      ]");
+    return this->base;
 }
 
 QueryBuilder BoolQueryType::should(int minimumMatches) {
     this->base.currentQuery.append("\"bool\": {\n"
                                    "      \"should\": [\n"
                                    "        {\n");
-    utils::buildParametersIntoQuery(this->tempParams);
     this->base.currentQuery.append("}\n"
                                    "      ]");
-    this->base.currentQuery.append("\"minimum_should_match\" :" + std::to_string(minimumMatches) + ",")
+    this->base.currentQuery.append("\"minimum_should_match\" :" + std::to_string(minimumMatches) + ",");
+    return this->base;
 }
 
-BoolQueryType BoolQueryParams::exists(std::string fieldName) {}
+BoolQueryType BoolQueryParams::exists(std::string fieldName) {
+    return BoolQueryType();
+}
 
-BoolQueryType BoolQueryParams::term(std::string term) {}
+BoolQueryType BoolQueryParams::term(std::string term) {
+    return BoolQueryType();
+}
 
 BoolQueryType BoolQueryParams::range(std::string upperBound, std::string lowerBound, std::string pattern = "==") {
     //Default pattern is gte and lte

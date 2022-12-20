@@ -23,6 +23,7 @@ class BoolQueryParams;
 class QueryBuilder {
 private:
     std::string currentQuery = "{\n \"query\": {\n ";
+    std::string tempString;
     int queryDepth = 2;
 
     friend class Query;

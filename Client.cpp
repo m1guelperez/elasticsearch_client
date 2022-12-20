@@ -3,7 +3,6 @@
 //
 
 #include "Client.h"
-#include "simdjson/singleheader/simdjson.h"
 
 #include <string>
 #include <curl/curl.h>

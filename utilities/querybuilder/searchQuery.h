@@ -1,8 +1,18 @@
 //
 // Created by miguel on 12/19/22.
 //
+#include <string>
 
-#ifndef ELASTIC_SEARCHQUERY_H
-#define ELASTIC_SEARCHQUERY_H
+#pragma once
 
-#endif //ELASTIC_SEARCHQUERY_H
+class Search {
+private:
+    std::string query = "{\n \"query\": {\n ";
+    int queryDepth = 2;
+public:
+    std::string getCurrentQuery();
+
+    Search* matchQuery(const std::string& field, const std::string& value);
+    Search* matchQuery(const std::string& field, int value);
+    std::string buildQuery();
+};

@@ -4,9 +4,11 @@
 
 #include "Client.h"
 #include "utilities/environment.h"
-#include "simdjson/singleheader/simdjson.h"
 #include "utilities/utilFunctions.h"
 #include "utilities/configfileHandler.h"
+#include <simdjson/simdjson.h>
+#include "utilities/querybuilder/searchQuery.h"
+#include <nlohmann/json.hpp>
 
 /**
  * Only used for testing the library.
@@ -15,27 +17,51 @@
 int main() {
 
     utils::initEsClient();
+    simdjson::ondemand::parser parser;
 
-    Configuration config;
-    config.loadConfigfile();
+    int indent = 4;
 
-    const std::string HOST = config.getHost();
-    const int PORT = config.getPort();
+    // Configuration config;
+    // config.loadConfigfile();
+
+    const std::string HOST = "localhost";
+    const int PORT = 9200;
 
 
     CURLcode res{};
     Client client{HOST, PORT};
     client.verboseLogging(1L);
 
-    // The first '/' is important!
-    //res = client.search("/miguels_test_index");
-    //std::cout << "Print: " << client.getReadBuffer() << client.getReadBuffer().length() << std::endl;
-
-
-
-    auto res2 = client.search("/miguels_test_index");
-    std::cout << "Response: " << client.getReadBuffer() << std::endl;
-    utils::responseCheck(res2);
+    Search search{};
+    std::string body = search.matchQuery("name", "test")->buildQuery();
+    auto finalRes = client.search("miguel", body);
+    nlohmann::json j = nlohmann::json::parse(client.getReadBuffer());
+    std::cout << "Response from ES: " << j.dump(indent) << std::endl;
+    utils::responseCheck(finalRes);
     utils::cleanUpEsClient();
     return 0;
 }
+
+
+/*
+ * Lets say I have the following class:
+
+```c++
+class Text {
+private:
+  std::string content;
+  std::string title;
+public:
+  void add_content();
+  void add_title();
+}
+```
+And I have the following implementation:
+```c++
+void Text::add_content(std::string content) {
+  this->content.append(content);
+}
+```
+
+
+ */
