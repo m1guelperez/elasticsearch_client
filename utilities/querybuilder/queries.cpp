@@ -9,6 +9,8 @@
 #include <iostream>
 #include <memory>
 
+const std::string TOKEN = "$TOKEN$";
+
 std::shared_ptr<QueryBuilder> queryBuilder() {
     std::shared_ptr<QueryBuilder> baseQuery(new QueryBuilder);
     return baseQuery;
@@ -16,32 +18,19 @@ std::shared_ptr<QueryBuilder> queryBuilder() {
 
 
 QueryBuilder BoolQueryType::must() {
-    this->base.currentQuery.append("\"bool\": {\n"
-                                   "      \"must\": [\n"
-                                   "        {\n");
-    this->base.tempString.append("}\n"
-                                   "      ]");
+    this->base.currentQuery.replace(base.currentQuery.find(TOKEN), 7, R"("bool":{"must":[{$TOKEN$}])");
     return this->base;
 }
 
 
-
 QueryBuilder BoolQueryType::mustNot() {
-    this->base.currentQuery.append("\"bool\": {\n"
-                                   "      \"must_not\": [\n"
-                                   "        {\n");
-    this->base.currentQuery.append("}\n"
-                                   "      ]");
+    this->base.currentQuery.replace(base.currentQuery.find(TOKEN), 7,R"("bool": {"must_not": [{$TOKEN$}])");
     return this->base;
 }
 
 QueryBuilder BoolQueryType::should(int minimumMatches) {
-    this->base.currentQuery.append("\"bool\": {\n"
-                                   "      \"should\": [\n"
-                                   "        {\n");
-    this->base.currentQuery.append("}\n"
-                                   "      ]");
-    this->base.currentQuery.append("\"minimum_should_match\" :" + std::to_string(minimumMatches) + ",");
+    this->base.currentQuery.replace(base.currentQuery.find(TOKEN), 7,R"("bool": {"should": [{$TOKEN$}])");
+    this->base.currentQuery.append(R"(minimum_should_match" :")" + std::to_string(minimumMatches) + ",");
     return this->base;
 }
 
