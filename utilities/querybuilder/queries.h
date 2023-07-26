@@ -22,7 +22,7 @@ class BoolQueryParams;
 //Base class
 class QueryBuilder {
 private:
-    std::string currentQuery = "{\n \"query\": {\n ";
+    std::string currentQuery = R"("query": {$TOKEN$)";
     std::string tempString;
     int queryDepth = 2;
 
@@ -33,7 +33,6 @@ private:
     friend class BoolQueryType;
 
 public:
-    std::unique_ptr<Query> wildcard(const std::string &field, const std::string &value);
 
     std::string getQuery();
 
@@ -47,6 +46,7 @@ private:
     QueryBuilder base;
 public:
     std::vector<std::string> tempParams;
+
     BoolQueryType exists(std::string fieldName);
 
     BoolQueryType term(std::string term);
