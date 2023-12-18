@@ -2,10 +2,28 @@
 // Created by miguel on 6/7/22.
 //
 
-#include "logger.h"
-#include <iostream>
-#include <string>
+import <iostream>;
+import <string>;
 
+class Logger {
+public:
+    void setLogLevel(int level);
+
+    int getCurrentLogLevel() const;
+
+    void error(const std::string &msg) const;
+
+    void debug(const std::string &msg) const;
+
+    void info(const std::string &msg) const;
+
+    const int ERROR = 0;
+    const int DEBUG = 1;
+    const int INFO = 2;
+
+private:
+    int currentLogLevel = 0;
+};
 
 int Logger::getCurrentLogLevel() const {
     std::cout << "Current Loglevel is: " << currentLogLevel << std::endl;

@@ -7,6 +7,18 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 
+class Search {
+private:
+    std::string query = R"({ "query": {)";
+    int queryDepth = 2;
+public:
+    std::string getCurrentQuery();
+
+    Search* matchQuery(const std::string& field, const std::string& value);
+    Search* matchQuery(const std::string& field, int value);
+    std::string buildQuery();
+};
+
 Search *Search::matchQuery(const std::string &field, const std::string &value) {
     std::string body = "\"match\": {"
                        "\"" + field + "\": \"" + value + "\"";
