@@ -38,7 +38,7 @@ private:
 public:
     std::vector<std::string> tempParams;
 
-    BoolQueryType exists(std::vector<std::string>& fieldName);
+    BoolQueryType exists(const std::vector<std::string>& fieldName);
 
     BoolQueryType term(std::string term);
 
@@ -80,7 +80,7 @@ QueryBuilder BoolQueryType::should(int minimumMatches = 1) {
     return this->base;
 }
 
-BoolQueryType BoolQueryParams::exists(std::vector<std::string>& fieldName) {
+BoolQueryType BoolQueryParams::exists(const std::vector<std::string>& fieldName) {
 
     for (auto& field : fieldName) {
         this->base.currentQuery.replace(base.currentQuery.find(TOKEN), REPLACE_TOKEN,
@@ -110,7 +110,7 @@ std::string QueryBuilder::getQuery() {
     return currentQuery;
 }
 
-void QueryBuilder::incrementQueryDepth(int inc) {
+void QueryBuilder::incrementQueryDepth(const int inc) {
     this->queryDepth = queryDepth + inc;
 }
 
