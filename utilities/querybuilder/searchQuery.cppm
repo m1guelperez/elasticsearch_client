@@ -2,10 +2,9 @@
 // Created by miguel on 12/19/22.
 //
 
-#include "searchQuery.h"
-#include <string>
-#include <iostream>
-#include <nlohmann/json.hpp>
+import <string>;
+import <iostream>;
+import <nlohmann/json.hpp>;
 
 class Search {
 private:

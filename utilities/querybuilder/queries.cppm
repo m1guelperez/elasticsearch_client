@@ -2,13 +2,11 @@
 // Created by miguel on 6/7/22.
 //
 
-#include "queries.h"
-#include "../utilFunctions.h"
-
-#include <string>
-#include <iostream>
-#include <memory>
-
+export module queries;
+import "../../utilities/utilFunctions.cppm";
+import <string>;
+import <iostream>;
+import <vector>;
 const std::string TOKEN = "$TOKEN$";
 constexpr int REPLACE_TOKEN = 7;
 const std::string BOOL_PARAM = "$BOOL_PARAM$";
@@ -57,6 +55,10 @@ public:
 
     QueryBuilder should(int minimumMatches);
 };
+
+std::string clean_token_fields(std::string query) {
+    return query.replace(query.find(TOKEN), REPLACE_TOKEN, "");
+}
 
 
 QueryBuilder BoolQueryType::must() {
@@ -118,8 +120,4 @@ std::string QueryBuilder::build() {
         this->currentQuery.append("\n}");
     }
     return this->currentQuery = clean_token_fields(this->currentQuery);
-}
-
-std::string clean_token_fields(std::string query) {
-    return query.replace(query.find(TOKEN), REPLACE_TOKEN, "");
 }
