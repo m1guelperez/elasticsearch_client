@@ -3,10 +3,12 @@
 //
 
 export module queries;
-import "../../utilities/utilFunctions.cppm";
-import <string>;
-import <iostream>;
-import <vector>;
+import utilFunctions;
+
+#include <string>
+#include <iostream>
+#include <vector>
+
 const std::string TOKEN = "$TOKEN$";
 constexpr int REPLACE_TOKEN = 7;
 const std::string BOOL_PARAM = "$BOOL_PARAM$";

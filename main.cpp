@@ -1,24 +1,27 @@
-#include <iostream>
+import environment;
+import utilFunctions;
+import client;
+import searchquery;
+
 #include <curl/curl.h>
+#include <nlohmann/json.hpp>
+#include <simdjson/simdjson.h>
+#include <iostream>
 #include <string>
 
-#include "Client.h"
-#include "utilities/environment.h"
-#include "utilities/utilFunctions.h"
-#include "utilities/configfileHandler.h"
-#include <simdjson/simdjson.h>
-#include "utilities/querybuilder/searchQuery.h"
-#include <nlohmann/json.hpp>
 
 /**
  * Only used for testing the library.
  *
  */
 int main() {
-
-    utils::initEsClient();
-    simdjson::ondemand::parser parser;
-
+    std::string xx = R"(hello $TOKEN$ "are" you?)";
+    xx.replace(xx.find("$TOKEN$"), 7,"how");
+    std::cout << xx << std::endl;
+//    utils::initEsClient();
+    std::string data = R"({"query": {"match": {"_id": "1JmY64cBVyaa_XZk6pTw"}})";
+    simdjson::padded_string xxx(data);
+    std::cout << xxx << std::endl;
     int indent = 4;
 
     // Configuration config;
@@ -37,31 +40,7 @@ int main() {
     auto finalRes = client.search("miguel", body);
     nlohmann::json j = nlohmann::json::parse(client.getReadBuffer());
     std::cout << "Response from ES: " << j.dump(indent) << std::endl;
-    utils::responseCheck(finalRes);
-    utils::cleanUpEsClient();
+//    utils::responseCheck(finalRes);
+//    utils::cleanUpEsClient();
     return 0;
 }
-
-
-/*
- * Lets say I have the following class:
-
-```c++
-class Text {
-private:
-  std::string content;
-  std::string title;
-public:
-  void add_content();
-  void add_title();
-}
-```
-And I have the following implementation:
-```c++
-void Text::add_content(std::string content) {
-  this->content.append(content);
-}
-```
-
-
- */

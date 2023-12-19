@@ -1,11 +1,11 @@
 //
 // Created by miguel on 6/11/22.
 //
-export module utils;
-import <curl/curl.h>;
-import <iostream>;
-import <sstream>;
-import "../utilities/logger/local_logger.cppm";
+export module utilFunctions;
+#include <curl/curl.h>
+#include <iostream>
+#include <sstream>
+import local_logger;
 
 
 Logger logger{};

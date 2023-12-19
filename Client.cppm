@@ -1,12 +1,14 @@
 //
 // Created by miguel on 6/6/22.
 //
+export module client;
 
 #include <curl/curl.h>
-import <string>;
-import "utilities/logger/local_logger.cppm";
-import <cstring>;
-import "utilities/querybuilder/queries.cppm";
+#include <string>
+#include <cstring>
+
+import queries;
+import local_logger;
 
 class Client {
 

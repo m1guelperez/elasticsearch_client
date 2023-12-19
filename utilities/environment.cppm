@@ -1,6 +1,7 @@
 //
 // Created by miguel on 6/7/22.
 //
+export module enviorment;
 
 #include <curl/curl.h>
 namespace environment {

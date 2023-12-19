@@ -3,9 +3,10 @@
 //
 
 export module configfileHandler;
-import <string>;
-import <fstream>;
-import <algorithm>;
+
+#include <string>
+#include <fstream>
+#include <algorithm>
 
 //TODO: Is there a better path logic?
 //TODO: Delete whitespaces

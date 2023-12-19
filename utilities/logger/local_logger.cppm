@@ -1,9 +1,10 @@
 //
 // Created by miguel on 6/7/22.
 //
+export module local_logger;
 
-import <iostream>;
-import <string>;
+#include <iostream>
+#include <string>
 
 class Logger {
 public:
