@@ -7,7 +7,6 @@
 
 #include <string>
 #include <iostream>
-#include <memory>
 
 const std::string TOKEN = "$TOKEN$";
 

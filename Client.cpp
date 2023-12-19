@@ -7,10 +7,12 @@
 #include <string>
 #include <curl/curl.h>
 #include <cstring>
-#include <iostream>
 
-static size_t WriteCallback(void *receivedContents, size_t size, size_t nmemb, void *buffer) {
-    ((std::string *) buffer)->append((char *) receivedContents, size * nmemb);
+static size_t WriteCallback(void *receivedContents, const size_t size, const size_t nmemb, void *buffer) {
+    std::string* realBuffer = static_cast<std::string*>(buffer);
+    const char* chars = static_cast<char*>(receivedContents);
+
+    realBuffer->append(chars, size * nmemb);
     return size * nmemb;
 }
 
@@ -117,7 +119,7 @@ CURLcode bulk(const std::string) {}
 CURLcode Client::executeQuery(const std::string &requestMode, const std::string &query) {
     resetReadBuffer();
     setCurlParams(requestMode, query);
-    CURLcode code = curl_easy_perform(this->curl);
+    const CURLcode code = curl_easy_perform(this->curl);
     this->executionUrl = this->baseUrl;
     return code;
 }
@@ -125,7 +127,7 @@ CURLcode Client::executeQuery(const std::string &requestMode, const std::string 
 CURLcode Client::stringQuery(const std::string &requestMode, const std::string &index, const std::string &query) {
     resetReadBuffer();
     setCurlParams(requestMode, query);
-    CURLcode code = curl_easy_perform(this->curl);
+    const CURLcode code = curl_easy_perform(this->curl);
     this->executionUrl = this->baseUrl;
     return code;
 }
@@ -142,13 +144,13 @@ CURLcode Client::executeQuery(const std::string &requestMode) {
 // Will be used for when the QueryBuilder is ready
 CURLcode Client::executeQuery(const std::string &index, QueryBuilder query, const std::string &requestMode) {
     resetReadBuffer();
-    std::string temp = query.getQuery();
+    const std::string temp = query.getQuery();
     std::string requestUrl = this->executionUrl + index;
     curl_easy_setopt(this->curl, CURLOPT_URL, this->executionUrl.c_str());
     curl_easy_setopt(this->curl, CURLOPT_POSTFIELDS, temp.c_str());
     curl_easy_setopt(this->curl, CURLOPT_POSTFIELDSIZE_LARGE, strlen(temp.c_str()));
     curl_easy_setopt(this->curl, CURLOPT_CUSTOMREQUEST, requestMode.c_str());
-    CURLcode code = curl_easy_perform(this->curl);
+    const CURLcode code = curl_easy_perform(this->curl);
     this->executionUrl = this->baseUrl;
     return code;
 }
@@ -196,7 +198,7 @@ void Client::resetReadBuffer() {
 }
 
 //Used for every request which uses a body/POSTFIELDS.
-void Client::setCurlParams(const std::string &requestMode, const std::string &query) {
+void Client::setCurlParams(const std::string &requestMode, const std::string &query) const {
     curl_easy_setopt(this->curl, CURLOPT_URL, this->executionUrl.c_str());
     curl_easy_setopt(this->curl, CURLOPT_POSTFIELDS, query.c_str());
     curl_easy_setopt(this->curl, CURLOPT_POSTFIELDSIZE_LARGE, strlen(query.c_str()));
@@ -204,7 +206,7 @@ void Client::setCurlParams(const std::string &requestMode, const std::string &qu
 }
 
 //Only used for requests which do not have a body.
-void Client::setCurlParamsWithoutPostBody(const std::string &requestMode) {
+void Client::setCurlParamsWithoutPostBody(const std::string &requestMode) const {
     //Fields like POSTFIELDSIZE etc., have to be unset when sending a GET, which does not have any POSTFIELDS otherwise this will be reused.
     curl_easy_setopt(this->curl, CURLOPT_HTTPGET, true);
     curl_easy_setopt(this->curl, CURLOPT_URL, this->executionUrl.c_str());

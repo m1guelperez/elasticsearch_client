@@ -27,9 +27,9 @@ private:
     struct curl_slist *header{};
     std::string readBuffer;
 
-    void setCurlParams(const std::string &requestMode, const std::string &query);
+    void setCurlParams(const std::string &requestMode, const std::string &query) const;
 
-    void setCurlParamsWithoutPostBody(const std::string &requestMode);
+    void setCurlParamsWithoutPostBody(const std::string &requestMode) const;
 
     //Function overloading for different executions via cURL
     CURLcode executeQuery(const std::string &requestMode, const std::string &query);

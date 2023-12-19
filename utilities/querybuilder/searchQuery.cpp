@@ -8,7 +8,7 @@
 #include <nlohmann/json.hpp>
 
 Search *Search::matchQuery(const std::string &field, const std::string &value) {
-    std::string body = "\"match\": {"
+    const std::string body = "\"match\": {"
                        "\"" + field + "\": \"" + value + "\"";
     this->query.append(body);
     this->queryDepth += 1;
@@ -18,7 +18,7 @@ Search *Search::matchQuery(const std::string &field, const std::string &value) {
 
 // Omit the "" to let it behave as a number in ES.
 Search *Search::matchQuery(const std::string &field, int value) {
-    std::string body = "\"match\": {"
+    const std::string body = "\"match\": {"
                        "\"" + field + "\":" + std::to_string(value);
     this->query.append(body);
     this->queryDepth += 1;

@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <curl/curl.h>
 namespace utils {
 //Init cURL
     void initEsClient();

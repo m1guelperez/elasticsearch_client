@@ -6,7 +6,6 @@
 
 #include <curl/curl.h>
 #include <string>
-#include <vector>
 
 namespace utils {
 //Check if the query to elasticsearch was successfully
