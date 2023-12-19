@@ -30,6 +30,7 @@ RUN apt-get install -y \
     build-essential \
     linux-libc-dev \
     git \
+    ninja-build \
     libboost-all-dev \
     libssl-dev \
     libcurl4-openssl-dev \
