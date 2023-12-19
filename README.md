@@ -10,8 +10,8 @@ The code has only been tested on Linux so far.
 
 To get the best results note the following:
 
-* C++ version >= 17
-* CMake version >= 3.22
+* C++ version >= 20
+* CMake version >= 3.25
 * Elasticsearch version >= 7.5
 
 ## Dependencies:
