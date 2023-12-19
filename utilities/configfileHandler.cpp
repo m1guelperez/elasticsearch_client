@@ -2,23 +2,14 @@
 // Created by miguel on 6/14/22.
 //
 
-export module configfileHandler;
-import <string>;
-import <fstream>;
-import <algorithm>;
+#include "configfileHandler.h"
+
+#include <string>
+#include <fstream>
+#include <algorithm>
 
 //TODO: Is there a better path logic?
 //TODO: Delete whitespaces
-
-class Configuration {
-    std::string Host{};
-    int Port{};
-
-public:
-    void loadConfigfile();
-    std::string getHost() const;
-    int getPort() const;
-};
 void Configuration::loadConfigfile() {
     std::ifstream file;
     file.open("../resources/configfile.txt");
