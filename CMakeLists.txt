@@ -1,10 +1,10 @@
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.25)
 project(elastic)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 add_executable(elastic main.cpp Client.cpp Client.h utilities/logger/logger.cpp utilities/logger/logger.h utilities/environment.cpp utilities/environment.h utilities/querybuilder/queries.cpp utilities/querybuilder/queries.h utilities/utilFunctions.cpp utilities/utilFunctions.h utilities/configfileHandler.cpp utilities/configfileHandler.h utilities/querybuilder/searchQuery.cpp utilities/querybuilder/searchQuery.h)
 find_package(CURL REQUIRED)
-pkg_check_modules(libcurl REQUIRED IMPORTED_TARGET libcurl>=7.17.0)
+pkg_check_modules(libcurl REQUIRED IMPORTED_TARGET libcurl>=7.50.0)
 include(FetchContent)
 FetchContent_Declare(json
         URL https://github.com/nlohmann/json/releases/download/v3.11.2/json.tar.xz
